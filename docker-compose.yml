@@ -13,6 +13,7 @@ services:
       - "80:80"
       - "443:443"
     volumes:
+      - /root/nftex/nftex_deploy/acme-challenge:/usr/share/nginx/html/.well-known/acme-challenge:rw
       - /etc/nginx/certs
       - /etc/nginx/vhost.d
       - /usr/share/nginx/html
