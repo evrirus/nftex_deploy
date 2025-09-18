@@ -4,6 +4,11 @@ networks:
   webproxy:
     external: true  # создаём заранее: docker network create webproxy
 
+volumes:
+  db_data:
+  letsencrypt:
+  nginx_certs:
+
 services:
   nginx-proxy:
     image: jwilder/nginx-proxy
@@ -13,11 +18,11 @@ services:
       - "80:80"
       - "443:443"
     volumes:
-      - /root/nftex/nftex_deploy/acme-challenge:/usr/share/nginx/html/.well-known/acme-challenge:rw
-      - /etc/nginx/certs
+      - nginx_certs:/etc/nginx/certs
       - /etc/nginx/vhost.d
       - /usr/share/nginx/html
       - /var/run/docker.sock:/tmp/docker.sock:ro
+      - /root/nftex/nftex_deploy/acme-challenge:/usr/share/nginx/html/.well-known/acme-challenge:ro
     networks:
       - webproxy
 
@@ -27,13 +32,13 @@ services:
     restart: unless-stopped
     environment:
       NGINX_PROXY_CONTAINER: nginx-proxy
+      ACME_CA_URI: https://acme-v02.api.letsencrypt.org/directory
     volumes:
-      - /root/nftex/nftex_deploy/acme-challenge:/usr/share/nginx/html/.well-known/acme-challenge:rw
+      - nginx_certs:/etc/nginx/certs
       - letsencrypt:/etc/acme.sh
-      - /etc/nginx/certs
-      - /etc/nginx/vhost.d
       - /usr/share/nginx/html
       - /var/run/docker.sock:/var/run/docker.sock:ro
+      - /root/nftex/nftex_deploy/acme-challenge:/usr/share/nginx/html/.well-known/acme-challenge:rw
     networks:
       - webproxy
 
@@ -41,17 +46,15 @@ services:
     image: evrirus/nftex_backend:latest
     container_name: backend
     restart: unless-stopped
-
     environment:
-      - POSTGRES_DB=dbname
-      - POSTGRES_USER=dbuser
-      - POSTGRES_PASSWORD=dbpassword
-      - POSTGRES_HOST=db
-      - POSTGRES_PORT=5432
-      - VIRTUAL_HOST=richmachine.ru
-      - LETSENCRYPT_HOST=richmachine.ru
-      - LETSENCRYPT_EMAIL=orion4605@gmail.com
-      - VIRTUAL_PROTO=http
+      POSTGRES_DB: dbname
+      POSTGRES_USER: dbuser
+      POSTGRES_PASSWORD: dbpassword
+      POSTGRES_HOST: db
+      POSTGRES_PORT: 5432
+      VIRTUAL_HOST: richmachine.ru
+      LETSENCRYPT_HOST: richmachine.ru
+      LETSENCRYPT_EMAIL: orion4605@gmail.com
     networks:
       - webproxy
     expose:
@@ -64,10 +67,9 @@ services:
     container_name: frontend
     restart: unless-stopped
     environment:
-      - VIRTUAL_HOST=richmachine.ru
-      - LETSENCRYPT_HOST=richmachine.ru
-      - LETSENCRYPT_EMAIL=orion4605@gmail.com
-      - VIRTUAL_PROTO=http
+      VIRTUAL_HOST: richmachine.ru
+      LETSENCRYPT_HOST: richmachine.ru
+      LETSENCRYPT_EMAIL: orion4605@gmail.com
     networks:
       - webproxy
     expose:
@@ -87,7 +89,3 @@ services:
       - db_data:/var/lib/postgresql/data
     expose:
       - "5432"
-
-volumes:
-  db_data:
-  letsencrypt:
