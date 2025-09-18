@@ -2,12 +2,13 @@ version: "3.9"
 
 networks:
   webproxy:
-    external: true
+    external: true  # создаём заранее: docker network create webproxy
 
 services:
   nginx-proxy:
     image: jwilder/nginx-proxy
     container_name: nginx-proxy
+    restart: unless-stopped
     ports:
       - "80:80"
       - "443:443"
@@ -22,6 +23,7 @@ services:
   letsencrypt:
     image: jrcs/letsencrypt-nginx-proxy-companion
     container_name: letsencrypt
+    restart: unless-stopped
     environment:
       NGINX_PROXY_CONTAINER: nginx-proxy
     volumes:
@@ -31,12 +33,11 @@ services:
       - /var/run/docker.sock:/var/run/docker.sock:ro
     networks:
       - webproxy
-    depends_on:
-      - nginx-proxy
 
   backend:
     image: evrirus/nftex_backend:latest
     container_name: backend
+    restart: unless-stopped
     environment:
       - POSTGRES_DB=dbname
       - POSTGRES_USER=dbuser
@@ -56,16 +57,17 @@ services:
   frontend:
     image: evrirus/nftex_frontend:latest
     container_name: frontend
+    restart: unless-stopped
     environment:
       - VIRTUAL_HOST=richmachine.ru
       - LETSENCRYPT_HOST=richmachine.ru
       - LETSENCRYPT_EMAIL=orion4605@gmail.com
     networks:
       - webproxy
-    depends_on:
-      - backend
     expose:
       - "80"
+    depends_on:
+      - backend
 
   db:
     image: postgres:17
