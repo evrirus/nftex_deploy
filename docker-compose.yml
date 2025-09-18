@@ -86,3 +86,4 @@ services:
 
 volumes:
   db_data:
+  letsencrypt:
