@@ -29,7 +29,7 @@ services:
     restart: always
     environment:
       POSTGRES_USER: dbuser
-      POSTGRES_PASSWORD=dbpassword
+      POSTGRES_PASSWORD: dbpassword
       POSTGRES_DB: dbname
     volumes:
       - db_data:/var/lib/postgresql/data
