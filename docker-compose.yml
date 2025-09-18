@@ -28,6 +28,7 @@ services:
     environment:
       NGINX_PROXY_CONTAINER: nginx-proxy
     volumes:
+      - /root/nftex/nftex_deploy/acme-challenge:/usr/share/nginx/html/.well-known/acme-challenge:rw
       - letsencrypt:/etc/acme.sh
       - /etc/nginx/certs
       - /etc/nginx/vhost.d
