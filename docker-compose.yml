@@ -1,0 +1,40 @@
+version: "3.9"
+
+services:
+  backend:
+    image: evrirus/nftex_backend:latest   # образ из Docker Hub
+    container_name: backend
+    environment:
+      - POSTGRES_DB=dbname
+      - POSTGRES_USER=dbuser
+      - POSTGRES_PASSWORD=dbpassword
+      - POSTGRES_HOST=db
+      - POSTGRES_PORT=5432
+    depends_on:
+      - db
+    expose:
+      - "8000"
+
+  frontend:
+    image: evrirus/nftex_frontend:latest  # образ из Docker Hub
+    container_name: frontend
+    ports:
+      - "80:80"
+    depends_on:
+      - backend
+
+  db:
+    image: postgres:17
+    container_name: postgres
+    restart: always
+    environment:
+      POSTGRES_USER: dbuser
+      POSTGRES_PASSWORD=dbpassword
+      POSTGRES_DB: dbname
+    volumes:
+      - db_data:/var/lib/postgresql/data
+    ports:
+      - "5432:5432"
+
+volumes:
+  db_data:
