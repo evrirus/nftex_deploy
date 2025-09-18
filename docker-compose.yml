@@ -51,6 +51,7 @@ services:
       - VIRTUAL_HOST=richmachine.ru
       - LETSENCRYPT_HOST=richmachine.ru
       - LETSENCRYPT_EMAIL=orion4605@gmail.com
+      - VIRTUAL_PROTO=http
     networks:
       - webproxy
     expose:
@@ -66,6 +67,7 @@ services:
       - VIRTUAL_HOST=richmachine.ru
       - LETSENCRYPT_HOST=richmachine.ru
       - LETSENCRYPT_EMAIL=orion4605@gmail.com
+      - VIRTUAL_PROTO=http
     networks:
       - webproxy
     expose:
