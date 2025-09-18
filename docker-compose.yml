@@ -2,13 +2,12 @@ version: "3.9"
 
 networks:
   webproxy:
-    external: true  # создаём заранее: docker network create webproxy
+    external: true
 
 services:
   nginx-proxy:
     image: jwilder/nginx-proxy
     container_name: nginx-proxy
-    restart: always
     ports:
       - "80:80"
       - "443:443"
@@ -29,9 +28,11 @@ services:
       - /etc/nginx/certs
       - /etc/nginx/vhost.d
       - /usr/share/nginx/html
-      - /var/run/docker.sock:/tmp/docker.sock:ro
+      - /var/run/docker.sock:/var/run/docker.sock:ro
     networks:
       - webproxy
+    depends_on:
+      - nginx-proxy
 
   backend:
     image: evrirus/nftex_backend:latest
@@ -61,10 +62,10 @@ services:
       - LETSENCRYPT_EMAIL=orion4605@gmail.com
     networks:
       - webproxy
-    expose:
-      - "80"
     depends_on:
       - backend
+    expose:
+      - "80"
 
   db:
     image: postgres:17
