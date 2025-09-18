@@ -27,6 +27,7 @@ services:
     environment:
       NGINX_PROXY_CONTAINER: nginx-proxy
     volumes:
+      - letsencrypt:/etc/acme.sh
       - /etc/nginx/certs
       - /etc/nginx/vhost.d
       - /usr/share/nginx/html
@@ -38,6 +39,7 @@ services:
     image: evrirus/nftex_backend:latest
     container_name: backend
     restart: unless-stopped
+
     environment:
       - POSTGRES_DB=dbname
       - POSTGRES_USER=dbuser
